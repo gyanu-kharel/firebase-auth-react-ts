@@ -11,25 +11,29 @@ import {
     useColorModeValue, useToast,
 } from '@chakra-ui/react';
 import {Link, useNavigate} from "react-router-dom";
-import {useState} from "react";
+import {useContext, useState} from "react";
 import {signInWithEmailAndPassword} from "firebase/auth";
 import {auth} from "../firebase.tsx";
+import { AppUserContext } from '../providers/AppUserProvider.tsx';
 
 const Login = ()  => {
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
+
     const toast = useToast();
     const navigate = useNavigate();
+    const {updateUser} = useContext(AppUserContext);
 
-    const handleSignIn = async () => {
+    const handleSignIn = () => {
         signInWithEmailAndPassword(auth, email, password)
             .then((userCred) => {
-                console.log(userCred.user);
                 toast({
                     title: 'Authentication successful',
                     status: 'success',
                     isClosable: false
                 });
+
+                updateUser? updateUser(userCred.user) : null;
                 navigate('/');
             })
             .catch((error) => {
@@ -39,7 +43,6 @@ const Login = ()  => {
                     status: 'error',
                     isClosable: false
                 });
-                console.log(error);
             });
     }
 

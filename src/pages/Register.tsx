@@ -13,11 +13,12 @@ import {
     Text,
     useColorModeValue, useToast,
 } from '@chakra-ui/react';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 import {Link, useNavigate} from "react-router-dom";
 import {createUserWithEmailAndPassword, updateProfile} from "firebase/auth";
 import {auth} from "../firebase.tsx";
+import { AppUserContext } from '../providers/AppUserProvider.tsx';
 
 type RegisterUserType = {
     firstName: string,
@@ -40,6 +41,7 @@ const Register = () => {
 
     const toast = useToast();
     const navigate  = useNavigate();
+    const {updateUser} = useContext(AppUserContext);
 
 
     const handleRegister = () => {
@@ -54,6 +56,7 @@ const Register = () => {
                 await updateProfile(userCred.user, {
                     displayName: `${formState.firstName} ${formState.lastName}`
                 });
+                updateUser ? updateUser(userCred.user) : null;
                 navigate('/');
             })
             .catch((error) => {
