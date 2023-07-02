@@ -1,5 +1,5 @@
 import { UserInfo } from "firebase/auth";
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 
 interface IAppUser {
     user: UserInfo | null;
@@ -21,8 +21,15 @@ const AppUserProvider = ({children} : AppUserProviderProps) => {
     const [user, setUser] = useState<UserInfo | null>(defaultAppUser.user);
 
     const updateUser = (user: UserInfo | null) => {
+        localStorage.setItem("appUser", JSON.stringify(user));
         setUser(user);
     }
+
+    useEffect(() => {
+        const userData = localStorage.getItem("appUser");
+        if(userData)
+            setUser(JSON.parse(userData))
+    }, []);
 
     return(
         <AppUserContext.Provider value={{user, updateUser}}>
